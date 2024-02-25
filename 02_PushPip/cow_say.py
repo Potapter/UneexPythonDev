@@ -1,10 +1,12 @@
 import argparse
 import cowsay
+import sys
+import os
 
 parser = argparse.ArgumentParser('cow_say')
 
 parser.add_argument('-n', action='store_true', help = 'If it is specified, the given message will not be word-wrapped')
-parser.add_argument('-W', dest='colums', type=int, help = 'Specifies roughly (where the message should be wrapped')
+parser.add_argument('-W', dest='columns', type=int, help = 'Specifies roughly (where the message should be wrapped')
 parser.add_argument('-b', action='store_true', help = 'Borg mode')
 parser.add_argument('-d', action='store_true', help = 'Causes the cow to appear dead')
 parser.add_argument('-g', action='store_true', help = 'Greedy mode')
@@ -20,8 +22,16 @@ parser.add_argument('-l', action='store_true', help = 'Show list all cowfiles on
 
 args = parser.parse_args()
 
-def main():
-	print(args)
 
+def main():
+	if args.l:
+		path = os.environ.get("COWPATH", cowsay.COW_PEN)
+		print(cowsay.list_cows(path))
+		return
+
+	message = sys.stdin.read()
+	print(cowsay.cowsay(message, **vars(args)))
+	return
+	
 if __name__ == '__main__':
 	main()
