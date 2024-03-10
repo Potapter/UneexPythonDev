@@ -15,11 +15,13 @@ def bullscows(guess: str, secret: str) -> (int, int):
 
 def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 	wished = random.choice(words)
+	print('Слово загадано!')
 	
 	attempts = 0
 	while (assumption := ask("Введите слово: ", words)) != wished:
 		attempts += 1
 		inform("Быки: {}, Коровы: {}", *bullscows(assumption, wished))
+		print('Неправильно! Попробуй ещё!\n')
 
 	return attempts
 
@@ -27,8 +29,9 @@ def ask(prompt: str, valid: list[str] = None) -> str:
 	print(prompt)
 	
 	if valid != None:
+		print('Список слов:', *valid)
 		while (word := input()) not in valid:
-			print(prompt)
+			print('Я сказал из списка!!!\n' + prompt)
 	else:
 		word = input() 
 	
@@ -40,7 +43,7 @@ def inform(format_string: str, bulls: int, cows: int) -> None:
 
 
 def main():
-	print(gameplay(ask, inform, ['abc', 'abb', 'aaa']))
+	print('Вы выиграли! Количество неудачных попыток:' , gameplay(ask, inform, ['abc', 'abb', 'aaa']))
 	return
 	
 if __name__ == '__main__':
