@@ -1,4 +1,7 @@
 import random
+import argparse
+import validators
+import urllib.request
 
 def bullscows(guess: str, secret: str) -> (int, int):
 	bulls = set()
@@ -41,9 +44,30 @@ def inform(format_string: str, bulls: int, cows: int) -> None:
 	print(format_string.format(bulls, cows))
 	return
 
+parser = argparse.ArgumentParser('bullscows')
+parser.add_argument('-m', '--reference', nargs = 2, metavar = ('dictionary', 'length'), default = ['https://raw.githubusercontent.com/Harrix/Russian-Nouns/main/dist/russian_nouns.txt', 5], help = 'Запускает референс-реализацию игры: в игре учавствуют слов из словаря dictionary (имя файла или URL ссылка) длины length')
+
+args = parser.parse_args()
 
 def main():
-	print('Вы выиграли! Количество неудачных попыток:' , gameplay(ask, inform, ['abc', 'abb', 'aaa']))
+	game_dictionary = []
+	
+	if validators.url(args.reference[0]):
+		try:
+			req = urllib.request.Request(args.reference[0])
+		except Exception as err:
+			print("Некорректная ссылка!")
+			return
+
+		with urllib.request.urlopen(req) as response:
+			for word in response.read().decode('UTF-8').split('\n'):
+				if len(word) == int(args.reference[1]):
+					game_dictionary.append(word)
+	
+	else:
+		print('path')
+	
+	print('Вы выиграли! Количество неудачных попыток:' , gameplay(ask, inform, game_dictionary))
 	return
 	
 if __name__ == '__main__':
