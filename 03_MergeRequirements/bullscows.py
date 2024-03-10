@@ -65,7 +65,11 @@ def main():
 					game_dictionary.append(word)
 	
 	else:
-		print('path')
+		with open(args.reference[0], 'r') as file:
+			for word in file:
+				word = word[:-1]
+				if len(word) == int(args.reference[1]):
+					game_dictionary.append(word)
 	
 	print('Вы выиграли! Количество неудачных попыток:' , gameplay(ask, inform, game_dictionary))
 	return
