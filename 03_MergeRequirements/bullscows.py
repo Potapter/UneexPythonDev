@@ -1,6 +1,15 @@
 def bullscows(guess: str, secret: str) -> (int, int):
-	pass
-	return
+	bulls = set()
+	cows = set()
+	d = list(set(guess))
+	
+	for i in range(len(secret)):
+		if secret[i] == guess[i]:
+			bulls.add(secret[i])
+		if secret[i] in d:
+			cows.add(secret[i])
+
+	return len(bulls), len(cows)
 
 def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 	pass
@@ -16,7 +25,7 @@ def inform(format_string: str, bulls: int, cows: int) -> None:
 
 
 def main():
-	pass
+	print(bullscows('ропот', 'полип'))
 	return
 	
 if __name__ == '__main__':
