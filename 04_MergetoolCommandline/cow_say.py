@@ -33,6 +33,17 @@ class numbername(cmd.Cmd):
                 match words[0]:
                     case 'cowsay':
                         DICT = COWSAY_PRESET
+                    case 'cowthink':
+                        DICT = COWTHINK_PRESET
+            case 3:
+                if words[0] == 'cowsay' or words[0] == 'cowthink':
+                    DICT = ['default', 'kitten']
+            case 4:
+                if words[0] == 'cowsay' or words[0] == 'cowthink':
+                    DICT = ['oo', '^^', 'Oo']
+            case 5:
+                if words[0] == 'cowsay' or words[0] == 'cowthink':
+                    DICT = ["'  '", '^^']
 
         return [c for c in DICT if c.startswith(text)]
 
