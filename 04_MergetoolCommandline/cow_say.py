@@ -14,13 +14,16 @@ class numbername(cmd.Cmd):
         print(cowsay.cowsay(**args))
 
     def do_list_cows(self, line):
-        pass
+        print(cowsay.list_cows(line))
     
     def do_make_bubble(self, line):
-        pass
+        print(cowsay.make_bubble(line))
     
     def do_cowthink(self, line):
-        pass
+        args = shlex.split(line)
+        args = {'message': args[0], 'cow': 'default' if len(args) < 2 else args[1],
+                    'eyes': 'oo' if len(args) < 3 else args[2], 'tongue': '  ' if len(args) < 4 else args[3]}
+        print(cowsay.cowthink(**args))
 
     def complete_cowsay(self, text, line, begidx, endidx):
         words = (line[:endidx] + ".").split()
