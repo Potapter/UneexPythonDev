@@ -1,4 +1,5 @@
 import asyncio
+import cowsay
 
 COMMANDS = ['who', 'cows', 'login', 'say', 'yield', 'quit']
 
@@ -28,24 +29,31 @@ async def chat(reader, writer):
                             if ' ' not in msng[msng.index(' ') + 1:-1]:
                                 nicknames[me] = msng[msng.index(' ') + 1:-1]
                                 await clients[me].put("SERVER: LOGIN SUCCESSFULLY")
+                                print(f'{me} logged in as {nicknames[me]}')
                             else:
                                 await clients[me].put("SERVER: LOGIN ERROR, NICKNAME SHOULDN'T CONTAIN SPACE")
                         else:
                             await clients[me].put("SERVER: NICKNAME ALREADY USED")
                     else:
-                        await clients[me].put("SOME NAMES")
+                        if nicknames == {}:
+                            await clients[me].put(f"SERVER: ANY")
+                        else:
+                            await clients[me].put(f"SERVER: ANY EXCEPT {', '.join(list(nicknames.values()))}")
                 else:
                     match msng.split()[0]:
                         case "who":
-                            await clients[me].put(nicknames.values())
+                            await clients[me].put(f"SERVER: {', '.join(list(nicknames.values()))}")
                         case "cows":
-                            await clients[me].put("SOME NAMES")
+                            if nicknames == {}:
+                                await clients[me].put(f"SERVER: ANY")
+                            else:
+                                await clients[me].put(f"SERVER: ANY EXCEPT {', '.join(list(nicknames.values()))}")
                         case "login":
                             await clients[me].put("ALREADY LOGGED IN")
                         case "say":
                             if len(msng.split()) > 2:
                                 if msng.split()[1] in nicknames.values():
-                                    await clients[list(nicknames.keys())[list(nicknames.values()).index(msng.split()[1])]].put(f"{nicknames[me]} -> {msng.split()[1]} : {' '.join(msng.split()[2:])}")
+                                    await clients[list(nicknames.keys())[list(nicknames.values()).index(msng.split()[1])]].put(cowsay.cowsay(f"{nicknames[me]} -> {msng.split()[1]} : {' '.join(msng.split()[2:])}"))
                                 else:
                                     await clients[me].put("SERVER: RECEPIENT IS NOT ONLINE")
                             else:
@@ -53,7 +61,10 @@ async def chat(reader, writer):
                         case "yield":
                             for out in clients.values():
                                 if out is not clients[me]:
-                                    await out.put(f"{nicknames[me]} -> *ALL* : {' '.join(msng.split()[1:])}")
+                                    await out.put(cowsay.cowsay(f"{nicknames[me]} -> *ALL* : {' '.join(msng.split()[1:])}"))
+                        case "quit":
+                            del nicknames[me]
+                            print(f'{me} logged out')
             elif q is receive:
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
