@@ -1,5 +1,7 @@
 import asyncio
 
+COMMANDS = ['who', 'cows', 'login', 'say', 'yeild', 'quit']
+
 clients = {}
 
 async def chat(reader, writer):
@@ -13,9 +15,13 @@ async def chat(reader, writer):
         for q in done:
             if q is send:
                 send = asyncio.create_task(reader.readline())
+                msng = q.result().decode().strip()
+                if msng.split()[0] not in COMMANDS:
+                    await clients[me].put("WRONG COMMAND")
+                    continue
                 for out in clients.values():
                     if out is not clients[me]:
-                        await out.put(f"{me} {q.result().decode().strip()}")
+                        await out.put(f"{me} {msng[msng.index(' ') + 1:]}")
             elif q is receive:
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
