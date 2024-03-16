@@ -3,9 +3,11 @@ import asyncio
 COMMANDS = ['who', 'cows', 'login', 'say', 'yeild', 'quit']
 
 clients = {}
+nicknames = {}
 
 async def chat(reader, writer):
     me = "{}:{}".format(*writer.get_extra_info('peername'))
+    logged_in = False
     print(me)
     clients[me] = asyncio.Queue()
     send = asyncio.create_task(reader.readline())
@@ -17,8 +19,20 @@ async def chat(reader, writer):
                 send = asyncio.create_task(reader.readline())
                 msng = q.result().decode().strip()
                 if msng.split()[0] not in COMMANDS:
-                    await clients[me].put("WRONG COMMAND")
+                    await clients[me].put("SERVER: UNKNOWN COMMAND")
                     continue
+                if not logged_in and msng.split()[0] not in ['login', 'cows']:
+                    await clients[me].put("SERVER: LOGIN FIRSTLY")
+                    continue
+                else:
+                    if msng[msng.index(' ') + 1:] not in nicknames.values():
+                        nicknames[me] = msng[msng.index(' ') + 1:]
+                        logged_in = True
+                        await clients[me].put("SERVER: LOGIN SUCCESSFULLY")
+                        continue
+                    else:
+                        await clients[me].put("SERVER: NICKNAME ALREADY USED")
+                        continue
                 for out in clients.values():
                     if out is not clients[me]:
                         await out.put(f"{me} {msng[msng.index(' ') + 1:]}")
